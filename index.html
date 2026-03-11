@@ -1,29 +1,88 @@
 <!DOCTYPE html>
 <html>
+
 <head>
 <title>Task Manager</title>
+
+<style>
+body{
+font-family: Arial;
+background:#f4f4f4;
+padding:40px;
+}
+
+.container{
+background:white;
+padding:20px;
+border-radius:10px;
+width:400px;
+margin:auto;
+box-shadow:0 0 10px gray;
+}
+
+input{
+width:100%;
+padding:10px;
+margin:10px 0;
+}
+
+button{
+padding:10px;
+background:#007bff;
+color:white;
+border:none;
+cursor:pointer;
+}
+
+button:hover{
+background:#0056b3;
+}
+
+.task{
+background:#eee;
+padding:10px;
+margin-top:10px;
+}
+</style>
+
 </head>
 
 <body>
 
-<h1>Task Manager</h1>
+<div class="container">
 
+<h2>Task Manager</h2>
+
+<label>API Token</label>
+<input id="token" placeholder="Paste Cognito JWT Token"/>
+
+<label>Task Title</label>
 <input id="taskTitle" placeholder="Enter task"/>
 
-<button onclick="createTask()">Add Task</button>
+<button onclick="createTask()">Create Task</button>
+
+<h3>My Tasks</h3>
+
+<div id="taskList"></div>
+
+</div>
 
 <script>
+
+const API_URL="https://YOUR_API_GATEWAY_URL/dev/tasks";
 
 async function createTask(){
 
 const title=document.getElementById("taskTitle").value;
+const token=document.getElementById("token").value;
 
-const response=await fetch("https://750tusedy6.execute-api.ap-south-2.amazonaws.com/dev",{
+const response=await fetch(API_URL,{
 
 method:"POST",
 
 headers:{
-"Content-Type":"application/json"
+"Content-Type":"application/json",
+"Authorization":"Bearer "+token
 },
 
 body:JSON.stringify({
@@ -34,7 +93,43 @@ title:title
 
 const data=await response.json();
 
-alert(data.message);
+alert("Task created");
+
+loadTasks();
+
+}
+
+async function loadTasks(){
+
+const token=document.getElementById("token").value;
+
+const response=await fetch(API_URL,{
+
+method:"GET",
+
+headers:{
+"Authorization":"Bearer "+token
+}
+
+});
+
+const tasks=await response.json();
+
+const list=document.getElementById("taskList");
+
+list.innerHTML="";
+
+tasks.forEach(task=>{
+
+const div=document.createElement("div");
+
+div.className="task";
+
+div.innerHTML=task.title+" - "+task.status;
+
+list.appendChild(div);
+
+});
 
 }
 
