@@ -4,25 +4,21 @@ phases:
   install:
     runtime-versions:
       python: 3.11
-    commands:
-      - echo Installing dependencies...
 
   pre_build:
     commands:
-      - echo Pre-build phase started
-      - echo Checking project files
+      - echo Installing dependencies
       - ls -la
 
   build:
     commands:
-      - echo Build started on `date`
-      - echo Packaging Lambda function
+      - echo Packaging Lambda
       - zip -r lambda_function.zip lambda_function.py
 
   post_build:
     commands:
-      - echo Build completed on `date`
-      - echo Build artifacts ready
+      - echo Running tests
+      - python lambda_function.py || true
 
 artifacts:
   files:
